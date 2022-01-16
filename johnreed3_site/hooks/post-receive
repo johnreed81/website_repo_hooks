@@ -16,7 +16,7 @@ while read oldrevision newrevision reference
 do
   BRANCH=$(git rev-parse --symbolic --abbrev-ref $reference)
   if [[ ${BRANCH} == "main" ]]; then
-    echo "Push was received. Deploying branch ${BRANCH} from ${GIT_DIR} to ${SITE_DIR}" |log
+    echo "Push was received with ${reference}. Deploying branch ${BRANCH} from ${GIT_DIR} to ${SITE_DIR}" |log
     git --work-tree=${SITE_DIR} --git-dir=${GIT_DIR} checkout -f ${BRANCH}
   else
     echo "${BRANCH} was not the expected branch" |log
