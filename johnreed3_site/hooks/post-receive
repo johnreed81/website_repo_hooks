@@ -1,0 +1,26 @@
+#!/bin/bash
+
+scriptName=post-receive
+HOME=/home4/jreed81
+logFile=$HOME/jr3hook.log
+SITE_DIR=$HOME/public_html/johnreed3.com
+GIT_DIR=$HOME/public_html/git/johnreed3_site
+
+function log () {
+  while read -r line; do
+    echo "$(date "+%Y-%m-%d %H:%M:%S") $scriptName:$USER --- $line"
+  done |tee -a $logFile 2>&1
+}
+
+while read oldrevision newrevision reference
+do
+  BRANCH=$(git rev-parse --symbolic --abbrev-ref $reference)
+  if [[ ${BRANCH} == "main" ]]; then
+    echo "Push was received. Deploying branch ${BRANCH} from ${GIT_DIR} to ${SITE_DIR}" |log
+    git --work-tree=${SITE_DIR} --git-dir=${GIT_DIR} checkout -f ${BRANCH}
+  else
+    echo "${BRANCH} was not the expected branch" |log
+  fi
+done
+
+exit 0
